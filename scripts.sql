@@ -1,5 +1,5 @@
 --all the queries here are the answers to questions asked while learning SQL from UDACITY--
---Skills used: Basic SQL functions, Joins, Aggregate Functions, subqueries--
+--Skills used: Basic SQL functions, Joins, Aggregate Functions--
 
 
 
@@ -97,4 +97,69 @@ FROM accounts a
 JOIN web_events w
 ON a.id = w.account_id
 WHERE a.id = '1001';
+
+
+--AVERAGE amount spent per order on each paper type, as well as the mean amount of each paper type purchased per order--
+SELECT AVG(standard_qty) AS avg_standard, AVG(gloss_qty) AS avg_gloss, 
+       AVG(poster_qty) AS avg_poster, AVG(standard_amt_usd) AS avg_standard_usd, 
+       AVG(gloss_amt_usd) AS avg_gloss_usd, AVG(poster_amt_usd) AS AVG_poster_usd
+FROM orders;
+
+
+--Find the smallest order placed by each account in terms of total usd. Provide only two columns - the account name and the total usd. Order from smallest dollar amounts to largest--
+SELECT a.name, MIN(total_amt_usd) AS total_usd
+FROM accounts a
+JOIN orders o
+ON a.id = o.account_id
+GROUP BY a.name
+ORDER BY total_usd
+ORDER BY ;
+
+
+--Find the number of times a particular channel was used in the web_events table for each region. Your final table should have three columns - the region name, the channel, and the number of occurrences. Order your table with the highest number of occurrences first.
+SELECT r.name, w.channel, COUNT(*) AS num_occurrence
+FROM accounts a
+JOIN web_events w
+ON a.id = w.account_id
+JOIN sales_reps s
+ON s.id = a.sales_rep_id
+JOIN region r
+ON r.id = s.region_id
+GROUP BY r.name, w.channel
+ORDER BY num_occurrence DESC;
+
+
+
+-- Which accounts used facebook as a channel to contact customers more than 6 times--
+SELECT a.id, a.name, w.channel, COUNT(*) AS channel_used
+FROM accounts a
+JOIN web_events w
+ON a.id = w.account_id
+GROUP BY a.id, a.name, w.channel
+HAVING COUNT(*) > 6 AND w.channel = 'facebook'
+ORDER BY channel_used;
+
+
+--In which month of which year did Walmart spend the most on gloss paper in terms of dollars--
+SELECT DATE_TRUNC('month', o.occurred_at) AS occurred_at_date, SUM(o.gloss_amt_usd) AS total_spent
+FROM orders o 
+JOIN accounts a
+ON a.id = o.account_id
+WHERE a.name = 'Walmart'
+GROUP BY occurred_at_date
+ORDER BY total_spent  DESC
+LIMIT 1;
+
+
+
+--Provide level associated with each account. Order with the top spending customers listed first--
+SELECT a.name, SUM(total_amt_usd) AS total_spent, 
+     CASE WHEN SUM(total_amt_usd) > 200000 THEN 'top'
+     WHEN  SUM(total_amt_usd) > 100000 THEN 'middle'
+     ELSE 'low' END AS customer_position
+FROM orders o
+JOIN accounts a
+ON o.account_id = a.id 
+GROUP BY a.name
+ORDER BY total_spent DESC;
 
