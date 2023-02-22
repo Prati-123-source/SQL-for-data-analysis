@@ -1,2 +1,2 @@
 # SQL-for-data-analysis
-The queries were part of practice questions used while learning SQL for data analysis from UDACITY
+Queries to explore Parch and posey database from the course SQL for data analysis from UDACITY
