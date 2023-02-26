@@ -1,5 +1,5 @@
 --all the queries here are the answers to questions asked while learning SQL from UDACITY--
---Skills used: Basic SQL functions, Joins, Aggregate Functions--
+--Skills used: Basic SQL functions, Joins, Aggregate Functions, CTE--
 
 
 
@@ -163,3 +163,16 @@ ON o.account_id = a.id
 GROUP BY a.name
 ORDER BY total_spent DESC;
 
+
+
+--Get a table that shows the average number of events a day for each channel--
+WITH events AS(SELECT DATE_TRUNC ('day', occurred_at) AS day, 
+       channel, 
+       COUNT(*) AS events_num
+FROM web_events
+GROUP BY 1, 2
+) 
+SELECT channel, AVG(events_num) AS average_events
+FROM events
+GROUP BY channel
+ORDER BY 2 DESC;
